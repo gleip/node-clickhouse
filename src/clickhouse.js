@@ -180,6 +180,8 @@ function httpRequest(reqParams, reqData, cb) {
 		return cb && cb(error);
 	}
 
+	console.log('request to: ', reqParams.host, reqParams.port, 'query: ', query);
+
 	var req = requestInstance.request(reqParams, httpResponseHandler.bind(
 		this, stream, reqParams, reqData, cb
 	));
