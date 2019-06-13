@@ -180,8 +180,6 @@ function httpRequest(reqParams, reqData, cb) {
 		return cb && cb(error);
 	}
 
-	console.log('request to: ', reqParams.host, reqParams.port, 'query: ', query);
-
 	var req = requestInstance.request(reqParams, httpResponseHandler.bind(
 		this, stream, reqParams, reqData, cb
 	));
@@ -221,6 +219,7 @@ function httpRequestForCluster(
 	cb
 ) {
 	return new Promise(function (resolve, reject) {
+		console.log('request to node: ', startParams.host, startParams.port)
 		var reqResult = httpRequest(startParams, reqData, cb);
 		reqResult.on('error', function (e) {
 			if (retry) {
