@@ -219,7 +219,10 @@ function httpRequestForCluster(
 	cb
 ) {
 	return new Promise(function (resolve, reject) {
-		console.log('request to node: ', startParams.host, startParams.port)
+		if (!startParams.host || !startParams.port) {
+			console.error('No active nodes');
+			reject('No active nodes');
+		}
 		var reqResult = httpRequest(startParams, reqData, cb);
 		reqResult.on('error', function (e) {
 			if (retry) {
@@ -391,8 +394,8 @@ ClickHouse.prototype.getReqParams = function () {
 								active: true
 							}]
 						});
-						urlObject.host = target.host;
-						urlObject.port = target.port;
+						urlObject.host = last.host;
+						urlObject.port = last.port;
 					} else {
 						urlObject.host = null;
 						urlObject.port = null;
@@ -555,14 +558,15 @@ ClickHouse.prototype.ping = function (cb) {
 
 ClickHouse.prototype.pinging = function (params) {
 	return new Promise(function (resolve, reject) {
-		var reqParams = this.getReqParams();
-
-		reqParams.method = 'GET';
-
+		var reqParams = {};
 		if (params && params.constructor === Object && params.host && params.port) {
 			reqParams.host = params.host;
 			reqParams.port = params.port;
+		} else {
+			reqParams = this.getReqParams();
 		}
+
+		reqParams.method = 'GET';
 
 		httpRequest(reqParams, {
 			finalized: true
